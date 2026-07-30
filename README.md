@@ -1,129 +1,234 @@
-# MCP Python SDK
-
 <div align="center">
 
-<strong>Python implementation of the Model Context Protocol (MCP)</strong>
+# 🤖 Model Context Protocol Server
 
-[![PyPI][pypi-badge]][pypi-url]
-[![MIT licensed][mit-badge]][mit-url]
-[![Python Version][python-badge]][python-url]
-[![Documentation][docs-badge]][docs-url]
-[![Protocol][protocol-badge]][protocol-url]
-[![Specification][spec-badge]][spec-url]
+**A production-ready MCP server built with the official Python SDK**  
+**exposing 17 tools, 3 resources, and 2 AI prompts to any LLM application.**
+
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://python.org)
+[![MCP](https://img.shields.io/badge/MCP-Python%20SDK-8B5CF6)](https://modelcontextprotocol.io)
+[![License](https://img.shields.io/badge/License-MIT-22C55E)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Production%20Ready-22C55E)](myserver.py)
 
 </div>
 
-> [!NOTE]
-> **This is v2 of the MCP Python SDK, the current stable release line.** It is a major rework of the SDK, both to support the [2026-07-28 MCP specification](https://modelcontextprotocol.io/specification/2026-07-28) (and every earlier revision) and to fix long-standing architectural issues. Coming from v1? See [What's new in v2](https://py.sdk.modelcontextprotocol.io/whats-new/) for the tour of what changed and the [migration guide](https://py.sdk.modelcontextprotocol.io/migration/) for every breaking change.
->
-> **Not ready to migrate?** v1.x lives on the [`v1.x` branch](https://github.com/modelcontextprotocol/python-sdk/tree/v1.x), continues to receive critical bug fixes and security patches, and is documented at <https://py.sdk.modelcontextprotocol.io/v1/>. Since `pip install mcp` now installs 2.x, keep a `<2` upper bound on your requirement (for example `mcp>=1.28,<2`) until you've migrated.
->
-> Something rough, confusing, or broken? [Open an issue](https://github.com/modelcontextprotocol/python-sdk/issues/new?template=v2-feedback.yaml) or find us in [#python-sdk-dev on the MCP Contributors Discord](https://discord.gg/6CSzBmMkjX).
+---
 
-## Documentation
+## 📌 What Is This?
 
-**The documentation lives at <https://py.sdk.modelcontextprotocol.io/>.**
+This project is a **fully-featured MCP (Model Context Protocol) server** built with the official [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk).
 
-It has a [Get started guide](https://py.sdk.modelcontextprotocol.io/get-started/), [What's new in v2](https://py.sdk.modelcontextprotocol.io/whats-new/), the [API reference](https://py.sdk.modelcontextprotocol.io/api/mcp/), and the [migration guide](https://py.sdk.modelcontextprotocol.io/migration/).
+**MCP** is an open standard by Anthropic that lets you expose tools, data, and prompts to any LLM application — Claude, ChatGPT, or your own AI agent. Think of it as a **REST API designed specifically for AI**.
 
-## What is MCP?
+| Concept | What it does |
+|---|---|
+| **Tools** | Functions the LLM can call (math, text, notes, users, utilities) |
+| **Resources** | Data the LLM can read via URI templates (like REST GET endpoints) |
+| **Prompts** | Reusable AI prompt templates with dynamic inputs |
 
-The [Model Context Protocol](https://modelcontextprotocol.io) lets you build servers that expose data and functionality to LLM applications in a secure, standardized way. Think of it like a web API, but designed for LLM interactions. With this SDK you can:
+---
 
-- **Build MCP servers** that expose tools, resources, and prompts to any MCP host
-- **Build MCP clients** that connect to any MCP server
-- Speak every standard transport: stdio, Streamable HTTP, and SSE
+## ✨ What's Inside
 
-## Requirements
+```
+ProfessionalServer
+├── 🔢 Math Tools      →  add · subtract · multiply · divide · power
+├── 📝 Text Tools      →  greet · reverse_text · word_count · to_uppercase · to_lowercase
+├── 🗒️  Note Manager   →  create_note · get_note · list_notes · delete_note
+├── 👤 User Manager    →  create_user · get_user · list_users
+├── 🛠️  Utilities      →  current_datetime · calculate_bmi · convert_temperature
+├── 📦 Resources       →  note://{title} · user://{username} · server://info
+└── 💬 Prompts         →  summarize_note · introduce_user
+```
 
-Python 3.10+.
+---
 
-## Installation
+## 🚀 Quick Start
+
+### 1 — Prerequisites
+
+- Python **3.10+** → [download](https://www.python.org/downloads/)
+- Verify: `python --version`
+
+### 2 — Install the MCP CLI
 
 ```bash
-uv add "mcp[cli]"      # or: pip install "mcp[cli]"
+pip install "mcp[cli]"
 ```
 
-The `cli` extra adds the `mcp` command-line tool (`mcp dev`, `mcp run`, `mcp install`) on top of the SDK; install plain `mcp` if you don't need it. For one-off commands, `uv run --with "mcp[cli]" mcp ...` works without a project.
+> Prefer `uv` (faster)?
+> ```bash
+> pip install uv
+> uv add "mcp[cli]"
+> ```
 
-## A server in 15 lines
-
-Create a `server.py`:
-
-<!-- snippet-source docs_src/index/tutorial001.py -->
-```python
-from mcp.server import MCPServer
-
-mcp = MCPServer("Demo")
-
-
-@mcp.tool()
-def add(a: int, b: int) -> int:
-    """Add two numbers."""
-    return a + b
-
-
-@mcp.resource("greeting://{name}")
-def greeting(name: str) -> str:
-    """Greet someone by name."""
-    return f"Hello, {name}!"
-```
-
-_Full example: [docs_src/index/tutorial001.py](https://github.com/modelcontextprotocol/python-sdk/blob/main/docs_src/index/tutorial001.py)_
-<!-- /snippet-source -->
-
-That's a complete MCP server: one tool, one templated resource. Open it in the [MCP Inspector](https://github.com/modelcontextprotocol/inspector):
+### 3 — Clone this repo
 
 ```bash
-uv run mcp dev server.py
+git clone https://github.com/yasar2005/model-context-protocol-server.git
+cd model-context-protocol-server
 ```
 
-Call `add` with `a=1`, `b=2` and you get `3` back.
+### 4 — Run the server
 
-Notice what you did **not** write: no JSON Schema (`a: int, b: int` _is_ the schema), no request parsing, no validation code, no protocol handling. Two type-hinted Python functions and a docstring.
-
-[Get started](https://py.sdk.modelcontextprotocol.io/get-started/) takes it from here.
-
-## A client in 10 lines
-
-The same package is a full MCP **client**. `Client` connects to a URL, a stdio subprocess, a custom transport, or (for tests) straight to a server object in memory with no transport at all:
-
-```python
-import asyncio
-
-from mcp import Client
-
-from server import mcp
-
-
-async def main() -> None:
-    async with Client(mcp) as client:
-        result = await client.call_tool("add", {"a": 1, "b": 2})
-        print(result.structured_content)  # {'result': 3}
-
-
-asyncio.run(main())
+```bash
+mcp dev myserver.py
 ```
 
-Swap `mcp` for `"http://localhost:8000/mcp"` and the exact same code talks to a remote server.
+This starts the server **and** opens the MCP Inspector UI automatically.
 
-## Contributing
+### 5 — Open the Inspector
 
-We are passionate about supporting contributors of all levels of experience and would love to see you get involved in the project. See the [contributing guide](https://github.com/modelcontextprotocol/python-sdk/blob/main/CONTRIBUTING.md) to get started.
+Go to **`http://localhost:6274`** in your browser — a full interactive dashboard to test every tool, resource, and prompt.
 
-## License
+---
 
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/modelcontextprotocol/python-sdk/blob/main/LICENSE) file for details.
+## 🖥️ Using the MCP Inspector
 
-[pypi-badge]: https://img.shields.io/pypi/v/mcp.svg
-[pypi-url]: https://pypi.org/project/mcp/
-[mit-badge]: https://img.shields.io/pypi/l/mcp.svg
-[mit-url]: https://github.com/modelcontextprotocol/python-sdk/blob/main/LICENSE
-[python-badge]: https://img.shields.io/pypi/pyversions/mcp.svg
-[python-url]: https://www.python.org/downloads/
-[docs-badge]: https://img.shields.io/badge/docs-python--sdk-blue.svg
-[docs-url]: https://py.sdk.modelcontextprotocol.io/
-[protocol-badge]: https://img.shields.io/badge/protocol-modelcontextprotocol.io-blue.svg
-[protocol-url]: https://modelcontextprotocol.io
-[spec-badge]: https://img.shields.io/badge/spec-spec.modelcontextprotocol.io-blue.svg
-[spec-url]: https://modelcontextprotocol.io/specification/latest
+### ▶ Run a Tool
+1. Click **Tools** tab → **List Tools**
+2. Click any tool to expand it
+3. Fill in the inputs → click **Run Tool**
+4. See the result in the **Response** panel
+
+### 📦 Read a Resource
+1. Click **Resources** tab → **List Templates**
+2. Select a template (e.g. `note://{title}`)
+3. Enter the variable (e.g. `shopping-list`) → **Read Resource**
+
+### 💬 Use a Prompt
+1. Click **Prompts** tab → **List Prompts**
+2. Select a prompt → fill in the argument → **Get Prompt**
+3. Copy the output into any AI chat
+
+---
+
+## 🛠️ Tools Reference
+
+### 🔢 Math Tools
+
+| Tool | Inputs | Example |
+|---|---|---|
+| `add` | `a`, `b` | `add(10, 5)` → `15.0` |
+| `subtract` | `a`, `b` | `subtract(10, 3)` → `7.0` |
+| `multiply` | `a`, `b` | `multiply(4, 5)` → `20.0` |
+| `divide` | `a`, `b` | `divide(20, 4)` → `5.0` |
+| `power` | `base`, `exponent` | `power(2, 10)` → `1024.0` |
+
+### 📝 Text Tools
+
+| Tool | Inputs | Example |
+|---|---|---|
+| `greet` | `name`, `language` | `greet("Alice", "spanish")` → `¡Hola, Alice!` |
+| `reverse_text` | `text` | `"hello"` → `"olleh"` |
+| `word_count` | `text` | Returns `{words, characters, lines}` |
+| `to_uppercase` | `text` | `"hello"` → `"HELLO"` |
+| `to_lowercase` | `text` | `"HELLO"` → `"hello"` |
+
+Supported languages for `greet`: `english` · `spanish` · `french` · `german` · `japanese`
+
+### 🗒️ Note Manager
+
+| Tool | Inputs | What it does |
+|---|---|---|
+| `create_note` | `title`, `content` | Saves a note to memory |
+| `get_note` | `title` | Retrieves note content |
+| `list_notes` | _(none)_ | Lists all note titles |
+| `delete_note` | `title` | Permanently removes a note |
+
+### 👤 User Manager
+
+| Tool | Inputs | What it does |
+|---|---|---|
+| `create_user` | `username`, `email`, `role` | Registers a new user |
+| `get_user` | `username` | Returns full profile |
+| `list_users` | _(none)_ | Lists all usernames |
+
+Supported roles: `user` · `admin` · `editor`
+
+### 🛠️ Utility Tools
+
+| Tool | Inputs | Example Output |
+|---|---|---|
+| `current_datetime` | _(none)_ | `"2024-01-15 14:30:45"` |
+| `calculate_bmi` | `weight_kg`, `height_m` | `{bmi: 22.86, category: "Normal weight ✅"}` |
+| `convert_temperature` | `value`, `from_unit` | `{celsius: 100, fahrenheit: 212.0, kelvin: 373.15}` |
+
+BMI categories: `Underweight 🔵` · `Normal weight ✅` · `Overweight 🟡` · `Obese 🔴`  
+Temperature units: `celsius` · `fahrenheit` · `kelvin`
+
+---
+
+## 📦 Resources
+
+| URI Template | Input | Returns |
+|---|---|---|
+| `note://{title}` | Note title | Full note content |
+| `user://{username}` | Username | Full user profile |
+| `server://info` | _(none)_ | Live server stats & status |
+
+---
+
+## 💬 Prompts
+
+| Prompt | Input | Output |
+|---|---|---|
+| `summarize_note` | `title` | AI-ready prompt to summarize a saved note |
+| `introduce_user` | `username` | AI-ready prompt to write a professional user intro |
+
+---
+
+## 🏗️ Project Structure
+
+```
+model-context-protocol-server/
+├── myserver.py          ← Main MCP server (all tools, resources, prompts)
+├── pyproject.toml       ← Project config & dependencies
+├── src/mcp/             ← MCP Python SDK source
+├── examples/            ← Example servers and clients
+├── docs/                ← Full SDK documentation
+└── tests/               ← Test suite
+```
+
+> **Data storage:** In-memory Python dicts. Data persists while the server is running — restart clears it.  
+> **Transport:** `stdio` (default via `mcp dev`) — compatible with Claude Desktop and any MCP host.
+
+---
+
+## 🔌 Connect to Claude Desktop
+
+Add this to your Claude Desktop config (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "professional-server": {
+      "command": "python",
+      "args": ["path/to/myserver.py"]
+    }
+  }
+}
+```
+
+Claude will then have access to all 17 tools directly in chat.
+
+---
+
+## 📋 Requirements
+
+- Python **3.10+**
+- `mcp[cli]` package
+
+---
+
+## 📄 License
+
+MIT License — see [LICENSE](LICENSE) for details.
+
+---
+
+<div align="center">
+
+Built with the [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk) &nbsp;·&nbsp; [Model Context Protocol](https://modelcontextprotocol.io) &nbsp;·&nbsp; [MCP Inspector](https://github.com/modelcontextprotocol/inspector)
+
+</div>
